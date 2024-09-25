@@ -1,0 +1,14 @@
+{
+  "server": {
+    "ip": "127.0.0.1",
+    "port": 8088,
+    "static": "./varconf-ui/"
+  },
+  "database": {
+    "driver": "mysql",
+    "dataSource": "root:mysql@tcp(127.0.0.1:3306)/varconf?charset=utf8&parseTime=true&loc=Local"
+  },
+  "service": {
+    "cron": "*/5 * * * * ?"
+  }
+}
