@@ -1,0 +1,9 @@
+apps:
+  - appId: 1
+    appName: TestApp
+    appDesc: This is a app for test init feature
+    appToken: TestApp:ThisIsApiTokenForGetConfig
+    configs:
+      - key: config
+        value: |
+          {"testKey": "testValue"}

@@ -2,8 +2,9 @@ package service
 
 import (
 	"database/sql"
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 
 	"varconf/core/dao"
 )
@@ -50,7 +51,9 @@ func (_self *AppService) CreateApp(appData *dao.AppData) bool {
 
 	appData.CreateTime.Time = time.Now()
 	appData.UpdateTime.Time = time.Now()
-	appData.ApiKey = appData.Code + ":" + uuid.New().String()
+	if appData.ApiKey == "" {
+		appData.ApiKey = appData.Code + ":" + uuid.New().String()
+	}
 	rowCnt := _self.appDao.InsertApp(appData)
 	if rowCnt != 1 {
 		return false

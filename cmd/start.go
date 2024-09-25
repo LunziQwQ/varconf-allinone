@@ -55,11 +55,12 @@ func Start(configPath, initFile string, recreate bool) error {
 		return errors.New("router init error")
 	}
 
-	initMVC(routeMux, dbConnect, configInfo.ServiceInfo)
-
 	if initFile != "" {
-		loadInitFile(initFile)
+		fmt.Println("Apply init data...")
+		applyInitData(initFile, dbConnect)
 	}
+
+	initMVC(routeMux, dbConnect, configInfo.ServiceInfo)
 
 	return routeMux.Run()
 }
@@ -90,7 +91,7 @@ func initDatabase(database DatabaseInfo, recreateTable bool) *sql.DB {
 	}
 
 	if recreateTable {
-		fmt.Println("Recreate tables")
+		fmt.Println("Clear tables...")
 		// drop database if exist
 		for tableName, sql := range dao.DropTableSql {
 			_, err := db.Exec(sql)
@@ -101,8 +102,8 @@ func initDatabase(database DatabaseInfo, recreateTable bool) *sql.DB {
 	}
 
 	// create table if not exist
+	fmt.Println("Create tables...")
 	for tableName, sql := range dao.CreateTableSql {
-		fmt.Println("Create table: ", tableName)
 		_, err := db.Exec(sql)
 		if err != nil {
 			panic(fmt.Sprintf("Create table %s err: %s", tableName, err.Error()))
@@ -150,9 +151,4 @@ func initMVC(routeMux *router.Router, dbConnect *sql.DB, serviceInfo ServiceInfo
 	controller.InitConfigController(routeMux, configService)
 
 	configService.CronRelease(serviceInfo.Cron)
-}
-
-func loadInitFile(initFile string) {
-	// TODO
-	return
 }
