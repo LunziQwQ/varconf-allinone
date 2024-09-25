@@ -20,10 +20,17 @@ Thanks [@yawenok](https://github.com/yawenok). Really clean and powerful config 
 go build -mod=vendor
 ```
 
-# start
+# Run server
 1. Edit config.json
 2. Start server
 ```
 varconf start -c ./config.json
 ```
 
+# Run server with init config
+> The `-i` args will create app and config only if app not exist. If you need to recreate all data. use `-r` args
+1. Edit init.yaml
+2. Start server
+```
+varconf start -c config.json -i .\init.yaml
+```
