@@ -111,7 +111,6 @@ func initDatabase(database DatabaseInfo, recreateTable bool) *sql.DB {
 
 	// Insert default user
 	_, err = db.Exec(dao.InsertDefaultUserSql)
-	fmt.Println(dao.InsertDefaultUserSql)
 	if err != nil {
 		panic("Insert default user err:" + err.Error())
 	}
