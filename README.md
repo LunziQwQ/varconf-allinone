@@ -15,22 +15,31 @@ Thanks [@yawenok](https://github.com/yawenok). Really clean and powerful config 
 * Add config init feature.
 * (TODO) Add jsonschema on frontend.
 
+# Dependencies
+* MySQL
+* No OS dependencies
+
 # Build
 ```
 go build -mod=vendor
 ```
 
-# Run server
-1. Edit config.json
-2. Start server
+# Usage
+1. Edit config.json to set mysql dsn.
+2. Start server.
 ```
 varconf start -c ./config.json
 ```
+3. All done: Visit `http://127.0.0.1:8088`. The default auth is `admin/123456`
 
-# Run server with init config
-> The `-i` args will create app and config only if app not exist. If you need to recreate all data. use `-r` args
-1. Edit init.yaml
-2. Start server
+
+If you want to clear all data and recreate. use `-r` arg.
+```
+varconf start -c ./config.json -r
+```
+
+If you want to start varconf with preset config. Edit `init.yaml` and use `-i` arg.
 ```
 varconf start -c config.json -i .\init.yaml
 ```
+> The `-i` args will create app and config only if app not exist. If you need to recreate all data. use `-r` args
