@@ -10,6 +10,7 @@ Thanks [@yawenok](https://github.com/yawenok). Really clean and powerful config 
 
 ## Different
 * Refactor cli by cobra.
+* (TODO) Make db init by go not sql script
 * (TODO) Add config init feature.
 * (TODO) Add jsonschema on frontend.
 

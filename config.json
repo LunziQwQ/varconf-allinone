@@ -1,8 +1,7 @@
 {
   "server": {
     "ip": "127.0.0.1",
-    "port": 8088,
-    "static": "./varconf-ui/"
+    "port": 8088
   },
   "database": {
     "driver": "mysql",

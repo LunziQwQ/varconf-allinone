@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	"varconf/core/dao"
 	"varconf/core/moudle/router"
 	"varconf/core/service"
 	"varconf/core/web/controller"
@@ -23,9 +25,8 @@ type DatabaseInfo struct {
 }
 
 type ServerInfo struct {
-	IP     string `json:"ip"`
-	Port   int    `json:"port"`
-	Static string `json:"static"`
+	IP   string `json:"ip"`
+	Port int    `json:"port"`
 }
 
 type ServiceInfo struct {
@@ -38,13 +39,13 @@ type ConfigInfo struct {
 	ServiceInfo  ServiceInfo  `json:"service"`
 }
 
-func Start(configPath, initFile string) error {
-	configInfo := initConfig(configPath)
+func Start(configPath, initFile string, recreate bool) error {
+	configInfo := loadConfigFile(configPath)
 	if configInfo == nil {
 		return errors.New("can't read config")
 	}
 
-	dbConnect := initDatabase(configInfo.DatabaseInfo)
+	dbConnect := initDatabase(configInfo.DatabaseInfo, recreate)
 	if dbConnect == nil {
 		return errors.New("database connect error")
 	}
@@ -63,7 +64,7 @@ func Start(configPath, initFile string) error {
 	return routeMux.Run()
 }
 
-func initConfig(configPath string) *ConfigInfo {
+func loadConfigFile(configPath string) *ConfigInfo {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil
@@ -78,12 +79,43 @@ func initConfig(configPath string) *ConfigInfo {
 	return &configInfo
 }
 
-func initDatabase(database DatabaseInfo) *sql.DB {
+func initDatabase(database DatabaseInfo, recreateTable bool) *sql.DB {
 	db, err := sql.Open(database.Driver, database.DataSource)
 	if err != nil {
 		panic(err)
 	}
-	db.Ping()
+	err = db.Ping()
+	if err != nil {
+		panic("Ping DB err: " + err.Error())
+	}
+
+	if recreateTable {
+		fmt.Println("Recreate tables")
+		// drop database if exist
+		for tableName, sql := range dao.DropTableSql {
+			_, err := db.Exec(sql)
+			if err != nil {
+				panic(fmt.Sprintf("Drop table %s err: %s", tableName, err.Error()))
+			}
+		}
+	}
+
+	// create table if not exist
+	for tableName, sql := range dao.CreateTableSql {
+		fmt.Println("Create table: ", tableName)
+		_, err := db.Exec(sql)
+		if err != nil {
+			panic(fmt.Sprintf("Create table %s err: %s", tableName, err.Error()))
+		}
+	}
+
+	// Insert default user
+	_, err = db.Exec(dao.InsertDefaultUserSql)
+	fmt.Println(dao.InsertDefaultUserSql)
+	if err != nil {
+		panic("Insert default user err:" + err.Error())
+	}
+
 	return db
 }
 
@@ -93,7 +125,7 @@ func initRouter(serverInfo ServerInfo) *router.Router {
 	routeMux.Get("/", func(w http.ResponseWriter, r *http.Request, c *router.Context) {
 		http.Redirect(w, r, "/static/html/index.html", http.StatusFound)
 	})
-	routeMux.Static("/static(.*)", serverInfo.Static, "index.html")
+	routeMux.Static("/static(.*)", "./varconf-ui", "index.html")
 
 	return routeMux
 }
@@ -122,5 +154,6 @@ func initMVC(routeMux *router.Router, dbConnect *sql.DB, serviceInfo ServiceInfo
 }
 
 func loadInitFile(initFile string) {
+	// TODO
 	return
 }

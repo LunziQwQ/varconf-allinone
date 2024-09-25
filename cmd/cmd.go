@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -32,6 +33,7 @@ var pidFile = "./pid.lock"
 var (
 	configFile string
 	daemon     bool
+	recreate   bool
 	initFile   string
 	startCmd   = &cobra.Command{
 		Use:   "start",
@@ -40,7 +42,7 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Starting!")
 			if daemon {
-				cmd := exec.Command(os.Args[0], "--config", configFile, "--init", initFile, "start")
+				cmd := exec.Command(os.Args[0], "--config", configFile, "--init", initFile, "--recreate", strconv.FormatBool(recreate), "start")
 				err := cmd.Start()
 				if err == nil {
 					fmt.Printf("PID %d is running...\n", cmd.Process.Pid)
@@ -54,7 +56,7 @@ var (
 					fmt.Println("Start failed!", err.Error())
 					return
 				}
-				err = Start(configFile, initFile)
+				err = Start(configFile, initFile, recreate)
 				if err != nil {
 					fmt.Println("Start failed!", err.Error())
 					os.Remove(pidFile)
@@ -104,6 +106,7 @@ func Execute() {
 func init() {
 	startCmd.Flags().StringVarP(&configFile, "config", "c", "./config.json", "config file path")
 	startCmd.Flags().BoolVarP(&daemon, "daemon", "d", false, "is daemon?")
+	startCmd.Flags().BoolVarP(&recreate, "recreate", "r", false, "clear all data and recreate? you will lost all data like user, app, config, etc.")
 	startCmd.Flags().StringVarP(&initFile, "init", "i", "./init.json", "init file path")
 
 	Cmd.AddCommand(startCmd)
