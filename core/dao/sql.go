@@ -12,7 +12,7 @@ var DropTableSql = map[string]string{
 
 var CreateTableSql = map[string]string{
 	"app": `
-		CREATE TABLE "app" (
+		CREATE TABLE IF NOT EXISTS "app" (
 			"app_id" bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
 			"name" varchar(255) NOT NULL COMMENT '应用代码',
 			"code" varchar(255) NOT NULL COMMENT '应用代号',
@@ -28,7 +28,7 @@ var CreateTableSql = map[string]string{
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='App信息表';
 	`,
 	"config": `
-		CREATE TABLE "config" (
+		CREATE TABLE IF NOT EXISTS "config" (
 			"config_id" bigint(20) NOT NULL AUTO_INCREMENT COMMENT '配置ID',
 			"app_id" bigint(20) NOT NULL COMMENT '应用ID',
 			"key" varchar(255) NOT NULL COMMENT '配置Key',
@@ -49,7 +49,7 @@ var CreateTableSql = map[string]string{
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='配置明细表';
 	`,
 	"release": `
-		CREATE TABLE "release" (
+		CREATE TABLE IF NOT EXISTS "release" (
 			"app_id" bigint(20) NOT NULL COMMENT '应用ID',
 			"config_list" longtext CHARACTER SET utf8mb4 NOT NULL COMMENT '配置列表',
 			"release_time" datetime NOT NULL COMMENT '修改时间',
@@ -59,7 +59,7 @@ var CreateTableSql = map[string]string{
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='发布版本表';
 	`,
 	"release_log": `
-		CREATE TABLE "release_log" (
+		CREATE TABLE IF NOT EXISTS "release_log" (
 			"id" bigint(20) NOT NULL AUTO_INCREMENT COMMENT '配置ID',
 			"app_id" bigint(20) NOT NULL COMMENT '应用ID',
 			"config_list" longtext CHARACTER SET utf8mb4 NOT NULL COMMENT '配置列表',
@@ -71,7 +71,7 @@ var CreateTableSql = map[string]string{
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='版本历史表';
 	`,
 	"user": `
-		CREATE TABLE "user" (
+		CREATE TABLE IF NOT EXISTS "user" (
 			"user_id" bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
 			"name" varchar(255) NOT NULL COMMENT '用户名',
 			"password" varchar(255) NOT NULL COMMENT '用户密码',
@@ -84,7 +84,7 @@ var CreateTableSql = map[string]string{
 	`,
 }
 
-var InsertDefaultUserSql string = "INSERT INTO `user` VALUES (1, 'admin', '123456', 2, '2024-01-01 23:33:33', '2024-01-01 23:33:33');"
+var InsertDefaultUserSql string = "INSERT IGNORE INTO `user` VALUES (1, 'admin', '123456', 2, '2024-01-01 23:33:33', '2024-01-01 23:33:33');"
 
 func init() {
 	for k, v := range CreateTableSql {
