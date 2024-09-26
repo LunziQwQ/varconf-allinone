@@ -26,7 +26,7 @@ COPY --from=build /varconf/varconf .
 COPY --from=build /varconf/varconf-ui/ ./varconf-ui/
 
 # 添加到环境变量
-ENV PATH /varconf:$PATH
+ENV PATH=/varconf:$PATH
 
 # 启动命令
 ENTRYPOINT ["varconf"]
