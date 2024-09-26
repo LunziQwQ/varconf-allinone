@@ -22,8 +22,9 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 WORKDIR /varconf/
 
 # 从buil阶段拷贝二进制文件
-COPY --from=build /varconf/varconf .
+COPY --from=build /varconf/varconf /bin/varconf
 COPY --from=build /varconf/varconf-ui/ ./varconf-ui/
+ENTRYPOINT ["/bin/varconf"]
 
 # 设置容器启动时执行的命令
-CMD ["varconf"]
+CMD ["--help"]
